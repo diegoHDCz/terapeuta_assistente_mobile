@@ -56,9 +56,12 @@ class MyApp extends StatelessWidget {
   }
 }
 
-/// Decides the initial screen: checks for a signed-in Supabase session via
-/// [AuthBloc] and mirrors the result into [AppUserCubit], then shows
-/// [HomePage] or [LoginPage] accordingly.
+/// Decides the initial screen once, by checking for a signed-in Supabase
+/// session via [AuthBloc]. The decision is cached after the first check and
+/// never revisited: once [LoginPage] is showing, further auth outcomes
+/// (a user logging in) are navigated explicitly via [MaterialPageRoute]
+/// rather than by this widget reacting to the same [AuthBloc] stream —
+/// otherwise both would race to swap the screen at once.
 class AuthGate extends StatefulWidget {
   const AuthGate({super.key});
 
@@ -67,6 +70,8 @@ class AuthGate extends StatefulWidget {
 }
 
 class _AuthGateState extends State<AuthGate> {
+  Widget? _resolved;
+
   @override
   void initState() {
     super.initState();
@@ -75,24 +80,20 @@ class _AuthGateState extends State<AuthGate> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocSelector<AppUserCubit, AppUserState, bool>(
-      selector: (state) => state is AppUserLoggedIn,
-      builder: (context, isLoggedIn) {
-        if (isLoggedIn) return const HomePage();
+    if (_resolved case final resolved?) return resolved;
 
-        return BlocBuilder<AuthBloc, AuthState>(
-          buildWhen: (previous, current) => !isLoggedIn,
-          builder: (context, state) {
-            if (state is AuthLoading || state is AuthInitial) {
-              return const Scaffold(
-                backgroundColor: AppPalette.whiteIce,
-                body: Center(child: CircularProgressIndicator()),
-              );
-            }
-            return const LoginPage();
-          },
-        );
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state is AuthSuccess) {
+          setState(() => _resolved = const HomePage());
+        } else if (state is AuthFailure) {
+          setState(() => _resolved = const LoginPage());
+        }
       },
+      child: const Scaffold(
+        backgroundColor: AppPalette.whiteIce,
+        body: Center(child: CircularProgressIndicator()),
+      ),
     );
   }
 }
