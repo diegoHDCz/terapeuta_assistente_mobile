@@ -6,7 +6,7 @@ import 'package:terapeuta_assistente_mobile/features/auth/presentation/bloc/auth
 import 'package:terapeuta_assistente_mobile/features/auth/presentation/pages/signup_page.dart';
 import 'package:terapeuta_assistente_mobile/features/auth/presentation/widgets/auth_field.dart';
 import 'package:terapeuta_assistente_mobile/features/auth/presentation/widgets/google_logo.dart';
-import 'package:terapeuta_assistente_mobile/features/home/presentation/pages/home_page.dart';
+import 'package:terapeuta_assistente_mobile/features/navigation/presentation/pages/main_shell_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -43,7 +43,7 @@ class _LoginPageState extends State<LoginPage> {
 
   void _goToHome() {
     Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => const HomePage()),
+      MaterialPageRoute(builder: (_) => const MainShellPage()),
       (route) => false,
     );
   }

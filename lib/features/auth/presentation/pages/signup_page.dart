@@ -5,7 +5,7 @@ import 'package:terapeuta_assistente_mobile/core/utils/show_toast.dart';
 import 'package:terapeuta_assistente_mobile/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:terapeuta_assistente_mobile/features/auth/presentation/widgets/auth_field.dart';
 import 'package:terapeuta_assistente_mobile/features/auth/presentation/widgets/google_logo.dart';
-import 'package:terapeuta_assistente_mobile/features/home/presentation/pages/home_page.dart';
+import 'package:terapeuta_assistente_mobile/features/navigation/presentation/pages/main_shell_page.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -48,7 +48,7 @@ class _SignupPageState extends State<SignupPage> {
 
   void _goToHome() {
     Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => const HomePage()),
+      MaterialPageRoute(builder: (_) => const MainShellPage()),
       (route) => false,
     );
   }

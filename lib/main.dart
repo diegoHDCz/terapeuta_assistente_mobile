@@ -5,7 +5,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:terapeuta_assistente_mobile/core/common/widgets/cubits/app_user_cubit.dart';
 import 'package:terapeuta_assistente_mobile/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:terapeuta_assistente_mobile/features/auth/presentation/pages/login_page.dart';
-import 'package:terapeuta_assistente_mobile/features/home/presentation/pages/home_page.dart';
+import 'package:terapeuta_assistente_mobile/features/navigation/presentation/pages/main_shell_page.dart';
 
 import 'core/di/service_locator.dart';
 import 'core/supabase/supabase_service.dart';
@@ -85,7 +85,7 @@ class _AuthGateState extends State<AuthGate> {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is AuthSuccess) {
-          setState(() => _resolved = const HomePage());
+          setState(() => _resolved = const MainShellPage());
         } else if (state is AuthFailure) {
           setState(() => _resolved = const LoginPage());
         }
