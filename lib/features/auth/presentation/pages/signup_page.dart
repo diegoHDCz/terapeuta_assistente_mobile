@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:terapeuta_assistente_mobile/core/di/service_locator.dart';
 import 'package:terapeuta_assistente_mobile/core/theme/app_palette.dart';
+import 'package:terapeuta_assistente_mobile/core/usecase/usecase.dart';
+import 'package:terapeuta_assistente_mobile/core/utils/show_toast.dart';
+import 'package:terapeuta_assistente_mobile/features/auth/domain/usecases/sign_up_with_email_usecase.dart';
+import 'package:terapeuta_assistente_mobile/features/auth/domain/usecases/sign_up_with_google_usecase.dart';
 import 'package:terapeuta_assistente_mobile/features/auth/presentation/widgets/auth_field.dart';
 import 'package:terapeuta_assistente_mobile/features/auth/presentation/widgets/google_logo.dart';
 
@@ -31,13 +36,38 @@ class _SignupPageState extends State<SignupPage> {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _isSubmitting = true);
-    // TODO: chamar AuthRepository/AuthBloc assim que estiverem implementados.
-    await Future<void>.delayed(const Duration(milliseconds: 600));
-    if (mounted) setState(() => _isSubmitting = false);
+    final result = await sl<SignUpWithEmailUsecase>()(
+      SignUpWithEmailParams(
+        name: _nameController.text.trim(),
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      ),
+    );
+    if (!mounted) return;
+    setState(() => _isSubmitting = false);
+
+    result.fold(
+      (failure) => showErrorToast(failure.message),
+      (user) {
+        showSuccessToast('Conta criada com sucesso, ${user.name}!');
+        // TODO: navegar para a home assim que estiver disponível.
+      },
+    );
   }
 
   Future<void> _handleGoogleSignup() async {
-    // TODO: chamar AuthRepository/AuthBloc (signUpWithGoogleAccount) assim que estiver implementado.
+    setState(() => _isSubmitting = true);
+    final result = await sl<SignUpWithGoogleUsecase>()(NoParams());
+    if (!mounted) return;
+    setState(() => _isSubmitting = false);
+
+    result.fold(
+      (failure) => showErrorToast(failure.message),
+      (user) {
+        showSuccessToast('Conta criada com sucesso, ${user.name}!');
+        // TODO: navegar para a home assim que estiver disponível.
+      },
+    );
   }
 
   @override

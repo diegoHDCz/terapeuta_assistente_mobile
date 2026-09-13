@@ -4,6 +4,7 @@ enum CommonError {
   noInternet,
   server,
   serialization,
+  unauthenticated,
   unknown,
 }
 
@@ -20,6 +21,8 @@ extension CommonErrorMessage on CommonError {
         return 'Não foi possível completar a solicitação. Tente novamente mais tarde.';
       case CommonError.serialization:
         return 'Não foi possível processar os dados recebidos.';
+      case CommonError.unauthenticated:
+        return 'Você precisa estar autenticado para continuar.';
       case CommonError.unknown:
         return 'Ocorreu um erro inesperado. Tente novamente.';
     }

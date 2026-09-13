@@ -6,7 +6,7 @@ import 'package:terapeuta_assistente_mobile/core/constants/app_constants.dart';
 import 'package:terapeuta_assistente_mobile/core/error/common_error.dart';
 import 'package:terapeuta_assistente_mobile/core/error/exceptions.dart';
 import 'package:terapeuta_assistente_mobile/features/auth/data/datasource/auth_remote_data_source.dart';
-import 'package:terapeuta_assistente_mobile/features/auth/data/models/user_model.dart';
+import 'package:terapeuta_assistente_mobile/features/auth/domain/models/user_model.dart';
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   final SupabaseClient supabaseClient;
@@ -54,6 +54,15 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     } catch (e) {
       throw _mapError(e);
     }
+  }
+
+  @override
+  Future<UserModel> currentUser() async {
+    final user = supabaseClient.auth.currentUser;
+    if (user == null) {
+      throw ServerException(CommonError.unauthenticated.message, CommonError.unauthenticated);
+    }
+    return _mapUser(user);
   }
 
   @override

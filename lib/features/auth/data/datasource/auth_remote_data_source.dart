@@ -1,5 +1,5 @@
 
-import 'package:terapeuta_assistente_mobile/features/auth/data/models/user_model.dart';
+import 'package:terapeuta_assistente_mobile/features/auth/domain/models/user_model.dart';
 
 abstract interface class AuthRemoteDataSource {
   Future<UserModel> signUpWithEmailAndPassword({
@@ -13,4 +13,5 @@ abstract interface class AuthRemoteDataSource {
   });
   Future<UserModel> signUpWithGoogleAccount();
   Future<UserModel> signInWithGoogleAccount();
+  Future<UserModel> currentUser();
 }

@@ -1,5 +1,5 @@
 
-import 'package:terapeuta_assistente_mobile/features/auth/domain/entities/user.dart';
+import 'package:terapeuta_assistente_mobile/core/common/entities/user.dart';
 
 class UserModel extends User {
   UserModel({required super.id, required super.email, required super.name, required super.role});
