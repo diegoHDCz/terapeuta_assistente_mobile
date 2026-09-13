@@ -3,8 +3,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:terapeuta_assistente_mobile/core/theme/app_palette.dart';
 import 'package:terapeuta_assistente_mobile/features/agenda/presentation/utils/pt_br_date.dart';
 
-/// Horizontal week strip with prev/next navigation. [weekStart] is expected
-/// to already be normalized to the Monday of the week being shown.
+/// Two-week strip with prev/next navigation. [weekStart] is expected to
+/// already be normalized to the Monday of the first week being shown; the
+/// second row displays the following week.
 class AgendaWeekStrip extends StatelessWidget {
   final DateTime weekStart;
   final DateTime selectedDate;
@@ -27,7 +28,8 @@ class AgendaWeekStrip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final days = List.generate(7, (i) => weekStart.add(Duration(days: i)));
+    final firstWeek = List.generate(7, (i) => weekStart.add(Duration(days: i)));
+    final secondWeek = List.generate(7, (i) => weekStart.add(Duration(days: 7 + i)));
 
     return Row(
       children: [
@@ -36,21 +38,24 @@ class AgendaWeekStrip extends StatelessWidget {
           icon: const Icon(Icons.chevron_left, color: AppPalette.textSecondary),
         ),
         Expanded(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: days.map((day) {
-              final isSelected = day.isSameDay(selectedDate);
-              final isToday = day.isSameDay(DateTime.now());
-
-              return _DayCell(
-                day: day,
-                isSelected: isSelected,
-                isToday: isToday,
-                hasAppointments: hasAppointments(day),
-                isBlocked: isDayBlocked(day),
-                onTap: () => onSelectDay(day),
-              );
-            }).toList(),
+          child: Column(
+            children: [
+              _WeekRow(
+                days: firstWeek,
+                selectedDate: selectedDate,
+                hasAppointments: hasAppointments,
+                isDayBlocked: isDayBlocked,
+                onSelectDay: onSelectDay,
+              ),
+              const SizedBox(height: 10),
+              _WeekRow(
+                days: secondWeek,
+                selectedDate: selectedDate,
+                hasAppointments: hasAppointments,
+                isDayBlocked: isDayBlocked,
+                onSelectDay: onSelectDay,
+              ),
+            ],
           ),
         ),
         IconButton(
@@ -58,6 +63,42 @@ class AgendaWeekStrip extends StatelessWidget {
           icon: const Icon(Icons.chevron_right, color: AppPalette.textSecondary),
         ),
       ],
+    );
+  }
+}
+
+class _WeekRow extends StatelessWidget {
+  final List<DateTime> days;
+  final DateTime selectedDate;
+  final bool Function(DateTime day) hasAppointments;
+  final bool Function(DateTime day) isDayBlocked;
+  final ValueChanged<DateTime> onSelectDay;
+
+  const _WeekRow({
+    required this.days,
+    required this.selectedDate,
+    required this.hasAppointments,
+    required this.isDayBlocked,
+    required this.onSelectDay,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: days.map((day) {
+        final isSelected = day.isSameDay(selectedDate);
+        final isToday = day.isSameDay(DateTime.now());
+
+        return _DayCell(
+          day: day,
+          isSelected: isSelected,
+          isToday: isToday,
+          hasAppointments: hasAppointments(day),
+          isBlocked: isDayBlocked(day),
+          onTap: () => onSelectDay(day),
+        );
+      }).toList(),
     );
   }
 }
